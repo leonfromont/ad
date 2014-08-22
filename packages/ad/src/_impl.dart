@@ -10,6 +10,7 @@ class Ad {
   CanvasElement canvas;
   CanvasRenderingContext2D ctx;
   State state;
+  num last = null;
   
   Set<int> currentlyPressedKeys = new Set<int>();
   
@@ -32,7 +33,14 @@ class Ad {
   }
   
   void update(num dt) {
-    state.update(dt);
+    if(last == null) {
+      last = dt;
+    }
+    
+    num elapsed = dt - last;
+    last = dt;
+    
+    state.update(elapsed);
     state.render(ctx);
     window.requestAnimationFrame(update); 
   }

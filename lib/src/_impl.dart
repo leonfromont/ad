@@ -12,9 +12,15 @@ class Ad {
   State state;
   num last = null;
   
+  int COUNT = 60;
+  int currentCount;
+  num countTime = 0;
+  num FPS = 0;
+  
   Set<int> currentlyPressedKeys = new Set<int>();
   
   Ad(String canvasID, State state) {
+    currentCount = COUNT;
     canvas = querySelector('#' + canvasID);
     ctx = canvas.getContext('2d');
     this.state = state;
@@ -39,6 +45,16 @@ class Ad {
     
     num elapsed = dt - last;
     last = dt;
+    
+    countTime += elapsed;
+    currentCount -= 1;
+    
+    if(currentCount == 0) {
+      num seconds = countTime / 1000.0;
+      FPS = 1.0 * COUNT / seconds;
+      countTime = 0.0;
+      currentCount = COUNT;
+    }
     
     state.update(elapsed);
     state.render(ctx);

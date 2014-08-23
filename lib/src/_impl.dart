@@ -6,6 +6,22 @@ class Path {
   List<Vector> points;
   Vector a, b;
   int a_index = 0;
+  bool repeat = true;
+  bool active = true;
+  
+  Path.once(List<Vector> points, num dt) {
+    repeat = false;
+    
+    if(points.length < 2) {
+      throw new Exception('must have at least two control points');
+    }
+
+    this.points = points;
+    this.dt = dt;
+    this.currentTime = 0.0;
+    this.a = points[0];
+    this.b = points[1];
+  }
 
   Path(List<Vector> points, num dt) {
     if(points.length < 2) {
@@ -20,16 +36,31 @@ class Path {
   }
 
   Vector currentPoint() {
+    if(!active) {
+      return b;
+    }
+    
     num t = currentTime / dt;
     return a.lerp(b, t);
   }
 
   void update(num nextdt) {
+    if(!active) {
+      return;
+    }
+    
     currentTime += nextdt;
 
     if(currentTime > dt) {
       currentTime = 0.0;
       a_index += 1; 
+      
+      
+      if(!repeat && a_index + 1 > points.length - 1) {
+        active = false;
+        return;
+      }
+      
       a = points[a_index % points.length];
       b = points[(a_index + 1) % points.length];
     }

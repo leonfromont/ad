@@ -73,12 +73,33 @@ class Vector {
   
   operator +(Vector other) => new Vector(x + other.x, y + other.y);
   operator -(Vector other) => new Vector(x - other.x, y - other.y);
+  operator *(num scale) => new Vector(x * scale, y * scale); 
 
   Vector lerp(Vector other, num dt) {
     Vector result = new Vector(0, 0);
     result.x = this.x + dt * (other.x - this.x);
     result.y = this.y + dt * (other.y - this.y);
     return result;
+  }
+  
+  Vector clone() {
+    return new Vector(x, y);
+  }
+  
+  void normalize() {
+
+    num length = sqrt(pow(x, 2.0) + pow(y, 2.0));
+    
+    if(length == 0.0) {
+      return;
+    }
+    
+    x = x / length;
+    y = y / length;
+  }
+  
+  String toString() {
+    return "X ${x}, Y ${y}";
   }
 }
 
@@ -92,12 +113,40 @@ class Rect {
   num get bottom            => top + height;
       set bottom(num value) => top = value - height;
       
+  
+      
   bool collide(Rect other) {
     bool noverlap = (this.left > other.right || 
                     other.left > this.right || 
                     this.top > other.bottom || 
                         other.top > this.bottom);
     return !noverlap;
+  }
+  
+  Vector get topleft => new Vector(left, top);
+  set topleft(Vector value) {
+    left = value.x;
+    top = value.y;
+  }
+  
+  Vector get center => new Vector(left + width / 2, top + height / 2);
+  
+  
+  Rect clone() {
+    return new Rect(left, top, width, height);
+  }
+  
+  bool contains(Rect other) {
+    // check each corner is inside us
+    if(other.left < left || other.right > right) {
+      return false;
+    }
+    
+    if(other.top < top || other.bottom > bottom) {
+      return false;
+    }
+    
+    return true;
   }
 }
 
